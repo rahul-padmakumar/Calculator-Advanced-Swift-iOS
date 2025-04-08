@@ -14,6 +14,8 @@ class ViewController: UIViewController {
     
     private var isFinishedTyping: Bool = true
     
+    private var calculatorLogic: CalculatorLogic = CalculatorLogic()
+    
     private var displayNumber: Double{
         get{
             guard let number = Double(displayLabel.text!) else{
@@ -23,21 +25,16 @@ class ViewController: UIViewController {
             return number
         }
         set{
-            displayLabel.text = String(newValue)
+            displayLabel.text = String(format: "%g", newValue)
         }
     }
     
     @IBAction func calcButtonPressed(_ sender: UIButton) {
-        
-        print(sender.currentTitle!)
         //What should happen when a non-number button is pressed
         if let method = sender.currentTitle{
-            if method == "AC"{
-                displayNumber = 0
-            } else if method == "+/-"{
-                displayNumber *= -1
-            } else if method == "%"{
-                displayNumber *= 0.01
+            calculatorLogic.setNumber(displayNumber)
+            if let calculatedValue = calculatorLogic.calculate(operation: method){
+                displayNumber = calculatedValue
             }
         }
         
@@ -46,8 +43,6 @@ class ViewController: UIViewController {
 
     
     @IBAction func numButtonPressed(_ sender: UIButton) {
-        
-        print(sender.currentTitle!)
         //What should happen when a number is entered into the keypad
         
         if let label = sender.currentTitle{
@@ -61,8 +56,6 @@ class ViewController: UIViewController {
                     if displayLabel.text!.contains("."){
                         return
                     }
-                    
-                    print("Floor - \(floor(displayNumber)), \(displayNumber)")
                     
                     let isInt = displayNumber.truncatingRemainder(dividingBy: 1) == 0
                     
